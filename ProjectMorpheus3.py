@@ -477,6 +477,7 @@ class Number:
 
     def isTrue(self):
         return self.value != 0
+
     def __repr__(self):
         return str(self.value)
 
@@ -601,3 +602,18 @@ def run(text):
     context.symbolTable = staticSymbolTable
     result = evaluate.visit(tree.node, context)
     return result.value, result.error
+
+
+# Defining the shell function
+def main():
+    print("Welcome to Python 4! Where simplicity is actually true in this programming language.")
+    while True:
+        text = input('Result > ')
+        result, error = run(text)
+        if error:
+            print(error.log())
+        elif result:
+            print(result)
+
+if __name__ == "__main__":
+    main()
