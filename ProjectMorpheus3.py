@@ -20,12 +20,13 @@ class Index:
     def copy(self):
         return Index(self.index,self.line,self.column)
 
-#Tokens----------------------------------------------------------------------------------------------------
+#Tokens Implementation----------------------------------------------------------------------------------------------------
 INT, FLOAT, PLUS, MINUS, MUL, DIV, LPAREN, RPAREN, EOF, IDENTIFIER, KEYWORD, EQUALS, EE, NE, LT, GT, LTE, GTE = 'INT', 'FLOAT', 'PLUS', 'MINUS', 'MUL', 'DIV', 'LPAREN', 'RPAREN', 'EOF', 'IDENTIFIER', 'KEYWORD', 'EQUALS', 'EE', 'NE', 'LT', 'GT', 'LTE', 'GTE'
 KEYWORD=['var','if','then','elif','else', 'and', 'or', 'not']
 DIGIT = '0123456789'
 LETTERS = string.ascii_letters
 lettersDigits = LETTERS + DIGIT
+
 class Tokens:
     def __init__(self,type,value=None, posStart=None, posEnd=None ):
         self.type = type
@@ -45,7 +46,7 @@ class Tokens:
             return f'{self.type}:{self.value}'
         return f'{self.type}'
 
-#Lexer----------------------------------------------------------------------------------------------------
+#Lexer Implementation----------------------------------------------------------------------------------------------------
 class lexer:
     def __init__(self,text):
         self.text = text
@@ -57,7 +58,7 @@ class lexer:
         self.pos.advance(self.currentToken)
         self.currentToken = self.text[self.pos.index] if self.pos.index < len(self.text) else None
 
-    def makeTokens(self):
+    def makeTokens(self): #Detects the type of token the data type is, and makes that specific token type
         tokensList = []
         while self.currentToken != None:
             if self .currentToken in ' \t':
@@ -95,14 +96,14 @@ class lexer:
             elif self.currentToken == '>':
                 tokensList.append(self.makeGreaterThan())
             else:
-                posStart = self.pos.copy()
+                # posStart = self.pos.copy()
                 char = self.currentToken
                 self.advance()
                 return [], sys.exit("Illegal Character: " + "'" + char + "'")
         tokensList.append(Tokens(EOF, posStart=self.pos))
         return tokensList, None
 
-    def makeNum(self):
+    def makeNum(self): #Helps with the detection if the value is a int or float based on if there is a decimal on the token
         numStr = ''
         decimalCount = 0
         posStart = self.pos.copy()
@@ -164,7 +165,7 @@ class lexer:
             tokType = GTE
         return Tokens(tokType, posStart=posStart, posEnd=self.pos)
 
-#Parser--------------------------------------------------------------------------------------
+#Parser Implementation--------------------------------------------------------------------------------------
 class numNode:
     def __init__(self,tok):
         self.tok = tok
@@ -228,7 +229,7 @@ class parserResult:
             self.error = error
         return self
 
-class parser:
+class parser: #This parser class main job is to specify the grammar of a factor,term,expression,if expression,variable expression
     def __init__(self,tokens):
         self.tokens = tokens
         self.tokensIndex = -1
@@ -310,7 +311,7 @@ class parser:
             ifExpr = res.register(self.ifExpr())
             if res.error:return res
             return res.success(ifExpr)
-        sys.exit("Missing or Expected identifier, int, float, +, -, or '(' ")
+        sys.exit("Missing or Expected identifier, int, float")
 
     def factor(self):
         result = parserResult()
@@ -318,7 +319,7 @@ class parser:
         if tok.type in (PLUS, MINUS):
             result.resgisterAdvance()
             self.advance()
-            factor = result.register(self.factor())
+            # factor = result.register(self.factor())
             if result.error:
                 return result
             sys.exit("Unary operators are not supported")
@@ -333,10 +334,10 @@ class parser:
     def comparisonExpr(self):
         res = parserResult()
         if self.currentToken.matches(KEYWORD,'not'):
-            opToken = self.currentToken
+            # opToken = self.currentToken
             res.resgisterAdvance()
             self.advance()
-            node = res.register(self.comparisonExpr())
+            # node = res.register(self.comparisonExpr())
             if res.error: return res
             sys.exit("Unary operators are not supported")
 
@@ -604,7 +605,7 @@ def run(text):
     return result.value, result.error
 
 
-# Defining the shell function
+# Defining the shell function--------------------------------------------------------------------
 def main():
     print("Welcome to Python 4! Where simplicity is actually true in this programming language.")
     while True:
